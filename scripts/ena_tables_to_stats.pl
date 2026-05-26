@@ -385,6 +385,8 @@ chomp $header;
 
 say $sample_out "$header\tGROUP\tLIBRARY_TYPE\tGEO";
 
+say STDERR $header;
+
 my $date_table = {};
 
 while (<$in>) {
@@ -425,15 +427,68 @@ while (<$in>) {
 	
 	if (
 	
-		defined $lat or
-		defined $lon or
-		defined $location or
-		defined $country
+		defined $lat and $lat =~ m/\d/
 		
 	) {
-	
+		
 		$geo = "has_geo";
 
+	}
+	
+	if (
+	
+		defined $lon and $lon  =~ m/\d/
+		
+	) {
+		
+		$geo = "has_geo";
+
+	}
+	
+	if ( defined $location ) {
+	
+		if (
+	
+			$location eq "NA" or
+			$location =~ m/^not\s/i or
+			$location =~ m/^missing\s*/i
+		
+		) {
+
+		}
+		
+		elsif ( $location =~ m/\w/ ) {
+		
+			$geo = "has_geo";
+			
+		}
+
+	}
+	
+	if ( defined $country ) {
+		
+		if (
+		
+			$country eq "NA" or
+			$country =~ m/^not\s/i or
+			$country =~ m/^missing\s*/i
+			
+		) {
+		
+		}
+		
+		elsif ( $country =~ m/\w/ ) {
+		
+			$geo = "has_geo";
+
+		}
+		
+	}
+	
+	if ( $geo eq "has_geo" ) {
+	
+		say STDERR "$_";
+	
 	}
 
 	if ( $strategy =~ m/(wgs|wga)/i ) {

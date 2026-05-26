@@ -643,33 +643,11 @@ sub count_samples {
 			my $source = $sample_table->{ $sample }->{ "source" };
 			
 			my $geo = 0;
-			
+					
 			if (
 			
 				defined $sample_table->{ $sample }->{ 'lat' } and
-				$sample_table->{ $sample }->{ 'lat' } =~ m/\w/
-				
-			) {
-				
-				$geo = 1;
-	
-			}
-			
-			elsif (
-			
-				defined $sample_table->{ $sample }->{ 'lon' } and
-				$sample_table->{ $sample }->{ 'lon' } =~ m/\w/
-				
-			) {
-				
-				$geo = 1;
-	
-			}
-			
-			elsif (
-
-				defined $sample_table->{ $sample }->{ 'location' } and
-				$sample_table->{ $sample }->{ 'location' } =~ m/\w/
+				$sample_table->{ $sample }->{ 'lat' } =~ m/\d/
 				
 			) {
 				
@@ -678,14 +656,58 @@ sub count_samples {
 			}
 			
 			if (
-
-				defined $sample_table->{ $sample }->{ 'country' } and
-				$sample_table->{ $sample }->{ 'country' } =~ m/\w/
+			
+				defined $sample_table->{ $sample }->{ 'lon' } and
+				$sample_table->{ $sample }->{ 'lon' } =~ m/\d/
 				
 			) {
 				
 				$geo = 1;
 	
+			}
+			
+			if ( $geo == 0 and defined $sample_table->{ $sample }->{ 'location' } ) {
+			
+				if (
+			
+					$sample_table->{ $sample }->{ 'location' } eq "NA" or
+					$sample_table->{ $sample }->{ 'location' } =~ m/^not\s/i or
+					$sample_table->{ $sample }->{ 'location' } =~ m/^missing\s*/i
+				
+				) {
+			
+					$geo = 0;
+				
+				}
+				
+				elsif ( $sample_table->{ $sample }->{ 'location' } =~ m/\w/ ) {
+				
+					$geo = 1;
+					
+				}
+	
+			}
+			
+			if ( $geo == 0 and defined $sample_table->{ $sample }->{ 'country' } ) {
+				
+				if (
+				
+					$sample_table->{ $sample }->{ 'country' } eq "NA" or
+					$sample_table->{ $sample }->{ 'country' } =~ m/^not\s/i or
+					$sample_table->{ $sample }->{ 'country' } =~ m/^missing\s*/i
+					
+				) {
+				
+					$geo = 0;
+				
+				}
+				
+				elsif ( $sample_table->{ $sample }->{ 'country' } =~ m/\w/ ) {
+				
+					$geo = 1;
+	
+				}
+				
 			}
 			
 			if ( $strategy =~ m/(wgs|wga)/i ) {
